@@ -81,7 +81,7 @@ EOF
         fi
 
         export REPO_OPTS=$(echo $GIT_REMOTES_CONF | jq -c --arg r $repo '.[$r].deployments')
-        REPO_LOC=$HOME_DIR/git/$repo
+        export REPO_LOC=$HOME_DIR/git/$repo
 
         # Create the directory
         mkdir -p $REPO_LOC
@@ -89,10 +89,15 @@ EOF
         git init --bare $REPO_LOC
 
         # Render the pre-receive script with correct values inside the $repo
+        export REMOTE_HOOKS_DIR=$(echo $GIT_REMOTES_CONF | jq -r --arg r $repo '.[$r].hooksDirPath')
+#        if  [ "$REMOTE_HOOKS" != "" ]; then
+#            echo $REPO_LOC
+#            ln -s $REPO_LOC/REMOTE_HOOKS_DIR $REPO_LOC/hooks
+#        fi
         mo /sshd-lib/pre_receive.sh > $REPO_LOC/hooks/pre-receive
 
         # Set appropriate permissions
-        chmod a+x $REPO_LOC/hooks/pre-receive
+        chmod -R a+x $REPO_LOC/hooks
         chown -R $repo:$repo $REPO_LOC
     done
 fi

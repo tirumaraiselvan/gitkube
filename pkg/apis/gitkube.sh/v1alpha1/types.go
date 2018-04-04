@@ -28,6 +28,8 @@ type RemoteSpec struct {
 	// List of deployment spec.
 	// Deployment spec defines which deployments are under gitkube management
 	Deployments []DeploymentSpec `json:"deployments"`
+
+	HooksDirPath string `json:"hooksDirPath"`
 }
 
 type RemoteStatus struct {
