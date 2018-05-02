@@ -38,6 +38,8 @@ export DEPLOY_REPO_NAME=$(basename "$PWD")
 
 REPO_OPTS='{{REPO_OPTS}}'
 REGISTRY_PREFIX='{{REGISTRY_PREFIX}}'
+REMOTE_HOOKS_DIR='{{REMOTE_HOOKS_DIR}}'
+REPO_LOC="${HOME}/git/${DEPLOY_REPO_NAME}"
 
 export DEPLOYMENTS=$(echo ${REPO_OPTS} | jq -c 'keys' | jq -r '.[]')
 
@@ -84,6 +86,15 @@ do
 #        echo "Executing pre-build hook"
 #        $PRE_BUILD_HOOK || exit 1
 #    fi
+
+    echo "Copying hooks..."
+    for hook in $BUILD_ROOT/$REMOTE_HOOKS_DIR/*
+    do
+        mo $hook | tee $hook.tmp > /dev/null
+        cat $hook.tmp | tee $hook > /dev/null
+    done
+    chmod -R a+x $BUILD_ROOT/$REMOTE_HOOKS_DIR
+    cp $BUILD_ROOT/$REMOTE_HOOKS_DIR/* $REPO_LOC/hooks/
 
     echo ""
     echo "$(echo $DEPLOYMENTS | wc -w) deployment(s) found in this repo"

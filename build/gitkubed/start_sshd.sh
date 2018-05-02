@@ -102,6 +102,8 @@ EOF
         # Initialise bare bones git repo
         git init --bare $REPO_LOC
 
+        export REMOTE_HOOKS_DIR=$(echo $GIT_REMOTES_CONF | jq -r --arg r $repo '.[$r].hooksDirPath')
+
         # Render the pre-receive script with correct values inside the $repo
         mo /sshd-lib/pre_receive.sh > $REPO_LOC/hooks/pre-receive
 
